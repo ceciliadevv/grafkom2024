@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Canvas Garis</title>
+<title>Canvas Garis (DDA)</title>
 <style>
     canvas {
         border: 1px solid black;
@@ -11,9 +11,8 @@
 </style>
 </head>
 <body>
-    <h1>Hello World</h1>
-    <h3>222117009</h3>
 
+222117009 - Cecilia Devina <br> <br>
 <canvas id="myCanvas" width="512" height="512"></canvas>
 
 <script>
@@ -21,24 +20,37 @@
     var canvas = document.getElementById('myCanvas');
     var ctx = canvas.getContext('2d');
 
-    // Simpan titik yang telah diklik
-    var points = [];
-
     // Fungsi untuk menggambar titik
     function drawPoint(x, y) {
-        ctx.beginPath();
-        ctx.arc(x, y, 3, 0, 2 * Math.PI);
-        ctx.fillStyle = 'red';
-        ctx.fill();
+        ctx.fillRect(x, y, 1, 1);
     }
 
-    // Fungsi untuk menggambar garis
-    function drawLine(p1, p2) {
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.strokeStyle = 'blue';
-        ctx.stroke();
+    // Fungsi untuk menggambar garis menggunakan algoritma DDA
+    function drawLineDDA(x1, y1, x2, y2) {
+        // Hitung perubahan koordinat
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+
+        // Tentukan jumlah langkah yang diperlukan
+        var steps = Math.max(Math.abs(dx), Math.abs(dy));
+
+        // Hitung inkremen untuk setiap koordinat
+        var xIncrement = dx / steps;
+        var yIncrement = dy / steps;
+
+        // Inisialisasi koordinat awal
+        var x = x1;
+        var y = y1;
+
+        // Gambar titik awal
+        drawPoint(Math.round(x), Math.round(y));
+
+        // Gambar garis dengan mengikuti inkremen
+        for (var i = 0; i < steps; i++) {
+            x += xIncrement;
+            y += yIncrement;
+            drawPoint(Math.round(x), Math.round(y));
+        }
     }
 
     // Fungsi untuk menangani klik mouse
@@ -46,16 +58,14 @@
         var rect = canvas.getBoundingClientRect();
         var mouseX = event.clientX - rect.left;
         var mouseY = event.clientY - rect.top;
-        
-        // Tambahkan titik ke dalam array points
-        points.push({ x: mouseX, y: mouseY });
 
-        // Gambar titik yang baru
-        drawPoint(mouseX, mouseY);
-
-        // Jika sudah ada dua titik, gambar garis yang menghubungkan keduanya
-        if (points.length === 2) {
-            drawLine(points[0], points[1]);
+        // Tentukan koordinat klik pertama atau kedua
+        if (!points[0]) {
+            points[0] = { x: mouseX, y: mouseY };
+        } else if (!points[1]) {
+            points[1] = { x: mouseX, y: mouseY };
+            // Jika sudah ada dua titik, gambar garis menggunakan algoritma DDA
+            drawLineDDA(points[0].x, points[0].y, points[1].x, points[1].y);
             // Kosongkan array points untuk menunggu dua titik baru lagi
             points = [];
         }
@@ -63,6 +73,9 @@
 
     // Tambahkan event listener untuk menangani klik mouse
     canvas.addEventListener('click', handleMouseClick);
+
+    // Simpan titik yang telah diklik
+    var points = [];
 </script>
 
 </body>
