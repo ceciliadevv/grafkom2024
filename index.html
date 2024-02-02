@@ -1,2 +1,67 @@
-<h1>Hello World</h1>
-<h2>222117009</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas Garis</title>
+<style>
+    canvas {
+        border: 1px solid black;
+    }
+</style>
+</head>
+<body>
+    <h1>Hello World</h1>
+    <h2>222117009</h2>
+
+<canvas id="myCanvas" width="512" height="512"></canvas>
+
+<script>
+    // Ambil elemen canvas dan konteksnya
+    var canvas = document.getElementById('myCanvas');
+    var ctx = canvas.getContext('2d');
+
+    // Simpan titik yang telah diklik
+    var points = [];
+
+    // Fungsi untuk menggambar titik
+    function drawPoint(x, y) {
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, 2 * Math.PI);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+    }
+
+    // Fungsi untuk menggambar garis
+    function drawLine(p1, p2) {
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.strokeStyle = 'blue';
+        ctx.stroke();
+    }
+
+    // Fungsi untuk menangani klik mouse
+    function handleMouseClick(event) {
+        var rect = canvas.getBoundingClientRect();
+        var mouseX = event.clientX - rect.left;
+        var mouseY = event.clientY - rect.top;
+        
+        // Tambahkan titik ke dalam array points
+        points.push({ x: mouseX, y: mouseY });
+
+        // Gambar titik yang baru
+        drawPoint(mouseX, mouseY);
+
+        // Jika sudah ada dua titik, gambar garis yang menghubungkan keduanya
+        if (points.length === 2) {
+            drawLine(points[0], points[1]);
+        }
+    }
+
+    // Tambahkan event listener untuk menangani klik mouse
+    canvas.addEventListener('click', handleMouseClick);
+</script>
+
+</body>
+</html>
